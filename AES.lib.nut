@@ -89,7 +89,7 @@ class AES {
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _convertToInt32(valueblob);
+        local t = _blobToInt32(valueblob);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Ke[0][i];
         }
@@ -135,7 +135,7 @@ class AES {
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _convertToInt32(cipherblob);
+        local t = _blobToInt32(cipherblob);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Kd[0][i];
         }
@@ -192,7 +192,7 @@ class AES {
     //                  to be converted into array of ints.
     //
     // Returns:         Array of 32-bit integers
-    function _convertToInt32(bytes) {
+    function _blobToInt32(bytes) {
         local result = [];
         for (local i = 0; i < bytes.len(); i += 4) {
             result.push(
@@ -226,7 +226,7 @@ class AES {
         local KC = this.key.len() / 4;
 
         // convert the key into ints
-        local tk = _convertToInt32(this.key);
+        local tk = _blobToInt32(this.key);
 
         // copy values into round key arrays
         local index;
