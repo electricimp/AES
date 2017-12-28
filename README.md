@@ -3,7 +3,7 @@
 The library implements AES-128 encryption in Squirrel. The Squirrel code is based
 on the original JavaScript [implementation](https://github.com/ricmoo/aes-js).
 
-**To add this library to your project, add** `#require "AES.lib.nut:0.1.0"`
+**To add this library to your project, add** `#require "AES.lib.nut:1.0.0"`
 **to the top of your code.**
 
 The library can be used on both agent and device sides.
@@ -12,13 +12,16 @@ The library can be used on both agent and device sides.
 
 The AES library supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
 encryption and decryption (might support AES-192 and AES-256 as well, but was never tested with that).
+
 It also supports Cipher Block Chaining mode (CBC) with custom initial vectors (IV).
 
 More modes that were not ported here are available in the original JS
 [code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
 
-The library operates exclusively on blobs, e.i. key, iv,
-cipher input and output should be of `blob` type.
+**NOTE:** The library operates exclusively on blobs, e.i. key, iv,
+cipher input and output should be of `blob` type. For developers' convenience a helper function
+that converts a hexadecimal string into a blob value 
+is provided by the library `AES.hexStringToBlob(string)`.
 
 ## AES Class Usage
 
@@ -30,51 +33,88 @@ The parameter *key* must be 128 bits (16 bytes), 192 bits (24 bytes) or 256 bits
 
 **Example**
 
-For all the examples we have a function hexStringToBlob(string) that converts a hexadecimal
-string to a Squirrel blob:
+The following code creates an AES object instance:
 
-```
-function hexStringToBlob(str) {
-    if (str.len() % 2) {
-        str = "0" + str;
-    }
-    local length = str.len() / 2;
-    local ret = blob(length);
-    for (local idx = 0; idx < length; idx += 1) {
-        local part = str.slice(idx * 2, (idx * 2 + 2)).tolower();
-        ret.writen(
-            (((part[0] <='9' ? (part[0] - '0') : (part[0] - 'a' + 10)) << 4) +
-             ((part[1] <='9' ? (part[1] - '0') : (part[1] - 'a' + 10)))),
-        'b');
-    }
-    return ret;
-}
+```squirrel
+local aes = AES(keyBlob);
+
+// aes object usage ...
 ```
 
-then usage can be summarized as follows:
+### encrypt(*valueBlob*)
 
-### AES
+Encrypts the specified value with the key that the AES instance is initialized with. 
+`valueBlob` must be 16 byte long `blob`. The function returns a blob with result of 
+the encryption process. 
+
+For string-to-blob conversions please use [hexStringToBlob](...) **TODO: update the link!**.
+
+**Example**
+
+The following code encrypts the value and stores it in the local variable: 
+
+```squirrel
+local encrypted = aes.encrypt(value);
 ```
-local key = hexStringToBlob("babe");
-local cipher = hexStringToBlob("c0de");
 
+### decrypt(*cipherBlob*)
+
+Decrypts the specified cipher. The `cipherBlob` must be 16 byte long `blob`. The function returns
+a blob with result of the decryption process.
+
+**Example**
+
+The following code decrypts the value and stores it in the local variable:
+
+```squirrel
+local decrypted = aes.decrypt(cipher);
+```
+
+### hexStringToBlob(*str*)
+
+A helper function to convert a hexadecimal string into a blob value. Returns a blob.
+
+**Example**
+
+```squirrel
+local keyBlob = AES.hexStringToBlob("86bd8a144720b6b0650cbde99a0db485");
 local aes = AES(key);
 
-local encrypted = aes.encrypt(cipher);
-local decrypted = aes.decrypt(encrypted);
-// decrypted == cipher
+local valueBlob = AES.hexStringToBlob("6aac72463f833e7df7335433feb4dab2");
+local cipherBlob = aes.encrypt(valueBlob);
+
+// use encrypted value here
+...
 ```
 
-### AES-CBC
-```
-key <- hexStringToBlob("11111111111111111111111111111111")
-cipher <- hexStringToBlob("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-iv <- hexStringToBlob("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+## AES.CBC Class Usage
 
-cbc <- AES_CBC(key, iv)
+### constructor(*key*, *iv*)
 
-encrypted <- cbc.encrypt(cipher)
-decrypted <- cbc.decrypt(encrypted)
+Creates an instance of `AES.CBC` class. `key` parameter is the blob that contains the encryption key.
+`iv` is the initialization vector (must be 16 bytes long).
+
+### encrypt(*valueBlob*)
+
+Encrypts the specified value. `valueBlob` is the value to be encrypted.
+The parameter size must be multiple of 16 bytes.
+
+### decrypt(*cipherBlob*)
+
+Decrypts the specified cipher. `cipherBlob` is the value to be decrypted.
+The value size must be multiple of 16 bytes.
+
+**Example**
+
+```squirrel
+key <- hexStringToBlob("11111111111111111111111111111111");
+value <- hexStringToBlob("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+iv <- hexStringToBlob("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+
+cbc <- AES.CBC(key, iv);
+
+encrypted <- cbc.encrypt(value);
+decrypted <- cbc.decrypt(encrypted);
 // decrypted == cipher
 ```
 
@@ -88,4 +128,4 @@ On an imp-001, a 16 byte blob is normally encrypted or decrypted in 7ms; a 32 by
 
 # License
 
-The OAuth library is licensed under the [MIT License](LICENSE).
+The AES library is licensed under the [MIT License](LICENSE).

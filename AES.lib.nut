@@ -31,7 +31,7 @@
  */
 class AES {
 
-    static VERSION = "0.1.0";
+    static VERSION = "1.0.0";
 
     // Number of rounds by keysize
     static numberOfRounds = {"16": 10, "24": 12, "32": 14};
@@ -69,28 +69,28 @@ class AES {
     // Parameters:
     //     key              Blob that contains the encryption key
     constructor(key) {
-        this.key = typeof key == "string" ? hexStringToBlob(key) : key;
+        this.key = key;
         this._prepare();
     }
 
     // Encrypts the specified value
     //
     // Parameters:
-    //      valueblob       Blob with a value to be encrypted
+    //      valueBlob       Blob with a value to be encrypted;
+    //                      the value must be 16 bytes long.
     //
     // Returns:
     //      Encrypted value as a blob
-    function encrypt(value) {
-        local bValue = typeof value == "string" ? hexStringToBlob(value) : value;
-        if (bValue.len() != 16) {
-            throw "Invalid value size (must be 16 bytes)"
+    function encrypt(valueBlob) {
+        if (valueBlob.len() != 16) {
+            throw "Invalid value size (must be 16 bytes)";
         }
 
         local rounds = this._Ke.len() - 1;
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _blobToArrayOfInt32(bValue);
+        local t = _blobToArrayOfInt32(valueBlob);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Ke[0][i];
         }
@@ -124,19 +124,20 @@ class AES {
     // Decrypts the specified cipher
     //
     // Parameters:
-    //      cipherblob      Blob with a cipher to be decrypted
+    //      cipherBlob      Blob with a cipher to be decrypted
+    //                      The cipher must be 16 bytes long
     //
     // Returns:             Decrypted value as a blob
-    function decrypt(cipherblob) {
-        if (cipherblob.len() != 16) {
-            throw "Invalid cipherblob size (must be 16 bytes)"
+    function decrypt(cipherBlob) {
+        if (cipherBlob.len() != 16) {
+            throw "Invalid cipher blob size (must be 16 bytes)";
         }
 
         local rounds = this._Kd.len() - 1;
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _blobToArrayOfInt32(cipherblob);
+        local t = _blobToArrayOfInt32(cipherBlob);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Kd[0][i];
         }
@@ -167,6 +168,12 @@ class AES {
         return result;
     }
 
+    // Helper function to convert a hexadecimal string into a blob value
+    //
+    // Parameters:
+    //      str             Hexadecimal string to be converted
+    //
+    // Returns:             Result blob value
     function hexStringToBlob(str) {
         if (str.len() % 2) {
             str = "0" + str;
@@ -304,56 +311,74 @@ class AES.CBC {
     _iv = null;
     _aes = null;
 
+    // Constructor. Creates an instance of AES.CBC class
+    // Parameters:
+    //      key             Blob that contains the encryption key
+    //      iv              Initialization vector (must be 16 bytes long)
     constructor(key, iv) {
         if (!iv) {
             iv = blob(16);
         } else if (iv.len() != 16) {
-            throw "Invalid initialation vector size (must be 16 bytes)"
+            throw "Invalid initialation vector size (must be 16 bytes)";
         }
-        this._iv = iv //createBuffer(iv);
+        this._iv = iv;
         this._aes = AES(key);
     }
 
-    function encrypt(value) {
-        local bValue = typeof value == "string" ? AES.hexStringToBlob(value) : value;
-        if ((bValue.len() % 16) != 0) {
-            throw "Invalid value size (must be multiple of 16 bytes)"
+    // Encrypts the specified value
+    //
+    // Parameters:
+    //      valueBlob       Blob with a value to be encrypted;
+    //                      the value must be multiple of 16 bytes.
+    //
+    // Returns:
+    //      Encrypted value as a blob
+    function encrypt(valueBlob) {
+        if ((valueBlob.len() % 16) != 0) {
+            throw "Invalid value size (must be multiple of 16 bytes)";
         }
 
-        local cipherblob = blob(bValue.len());
+        local cipherBlob = blob(valueBlob.len());
         local block = blob(16);
 
         local lastCipherblock = this._iv
 
-        for (local i = 0; i < bValue.len(); i += 16) {
-            _blobcopy(bValue, block, 0, i, i + 16);
+        for (local i = 0; i < valueBlob.len(); i += 16) {
+            _blobcopy(valueBlob, block, 0, i, i + 16);
             for (local j = 0; j < 16; j++) {
                 block[j] = block[j] ^ lastCipherblock[j];
             }
 
             lastCipherblock = this._aes.encrypt(block);
-            _blobcopy(lastCipherblock, cipherblob, i, 0, 16);
+            _blobcopy(lastCipherblock, cipherBlob, i, 0, 16);
         }
 
-        return cipherblob;
+        return cipherBlob;
     }
 
-    function decrypt(cipherblob) {
-        if ((cipherblob.len() % 16) != 0) {
-            throw "Invalid cipherblob size (must be multiple of 16 bytes)"
+    // Decrypts the specified cipher
+    //
+    // Parameters:
+    //      cipherBlob      Blob with a cipher to be decrypted
+    //                      The cipher value must be multiple of 16 bytes
+    //
+    // Returns:             Decrypted value as a blob
+    function decrypt(cipherBlob) {
+        if ((cipherBlob.len() % 16) != 0) {
+            throw "Invalid cipherBlob size (must be multiple of 16 bytes)";
         }
 
-        local value = blob(cipherblob.len());
+        local value = blob(cipherBlob.len());
         local block = blob(16);
 
         local lastCipherblock = this._iv
-        for (local i = 0; i < cipherblob.len(); i += 16) {
-            _blobcopy(cipherblob, block, 0, i, i + 16);
+        for (local i = 0; i < cipherBlob.len(); i += 16) {
+            _blobcopy(cipherBlob, block, 0, i, i + 16);
             block = this._aes.decrypt(block);
             for (local j = 0; j < 16; j++) {
                 value[i + j] = block[j] ^ lastCipherblock[j];
             }
-            _blobcopy(cipherblob, lastCipherblock, 0, i, i + 16);
+            _blobcopy(cipherBlob, lastCipherblock, 0, i, i + 16);
         }
         return value;
     }
