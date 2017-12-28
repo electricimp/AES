@@ -20,7 +20,7 @@ More modes that were not ported here are available in the original JS
 
 **NOTE:** The library operates exclusively on blobs, e.i. key, iv,
 cipher input and output should be of `blob` type. For developers' convenience a helper function
-that converts a hexadecimal string into a blob value 
+that converts a hexadecimal string into a blob value
 is provided by the library `AES.hexStringToBlob(string)`.
 
 ## AES Class Usage
@@ -43,15 +43,15 @@ local aes = AES(keyBlob);
 
 ### encrypt(*valueBlob*)
 
-Encrypts the specified value with the key that the AES instance is initialized with. 
-`valueBlob` must be 16 byte long `blob`. The function returns a blob with result of 
-the encryption process. 
+Encrypts the specified value with the key that the AES instance is initialized with.
+`valueBlob` must be 16 byte long `blob`. The function returns a blob with result of
+the encryption process.
 
 For string-to-blob conversions please use [hexStringToBlob](#hexstringtoblobstr).
 
 **Example**
 
-The following code encrypts the value and stores it in the local variable: 
+The following code encrypts the value and stores it in the local variable:
 
 ```squirrel
 local encrypted = aes.encrypt(value);
@@ -73,6 +73,11 @@ local decrypted = aes.decrypt(cipher);
 ### hexStringToBlob(*str*)
 
 A helper function to convert a hexadecimal string into a blob value. Returns a blob.
+The function supports only specific format of strings: just hexadecimal digits/characters, for example:
+`fcb5972d1e6419283b9c5a5bf7e193c4` or `ea32d4b183f0988984f1d536f15fd1f2`.
+No other characters are supported and may result in unpredictable behavior.
+
+Examples of string formats that are not supported: `0x123456`, `\x45\x89\x0f`, `x2Fx34x6F`.
 
 **Example**
 

@@ -175,6 +175,7 @@ class AES {
     //
     // Returns:             Result blob value
     function hexStringToBlob(str) {
+        str = str.tolower();
         if (str.len() % 2) {
             str = "0" + str;
         }
@@ -214,10 +215,12 @@ class AES {
     }
 
     function _prepare() {
-        local rounds = numberOfRounds[this.key.len().tostring()];
-        if (rounds == null) {
+        local keyLenStr = this.key.len().tostring();
+        if (!(keyLenStr in numberOfRounds)) {
             throw "Invalid key size (must be 16, 24 or 32 bytes)";
         }
+
+        local rounds = numberOfRounds[keyLenStr];
 
         // encryption round keys
         this._Ke = [];
@@ -329,7 +332,7 @@ class AES.CBC {
     //
     // Parameters:
     //      valueBlob       Blob with a value to be encrypted;
-    //                      the value must be multiple of 16 bytes.
+    //                      the value size must be multiple of 16 bytes.
     //
     // Returns:
     //      Encrypted value as a blob
