@@ -47,7 +47,7 @@ Encrypts the specified value with the key that the AES instance is initialized w
 `valueBlob` must be 16 byte long `blob`. The function returns a blob with result of 
 the encryption process. 
 
-For string-to-blob conversions please use [hexStringToBlob](#hexstringtoblob-str).
+For string-to-blob conversions please use [hexStringToBlob](#hexstringtoblobstr).
 
 **Example**
 
