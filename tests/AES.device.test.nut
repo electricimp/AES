@@ -17,6 +17,23 @@ class AESTestCase extends ImpTestCase {
         assertEqual(ints[2], 0x88776655, format("third int should be 0x55667788, received: 0x%x", ints[2]));
     }
 
+    function testHexStringToBlob() {
+        local hexStringLower = "df7df63f3e804feaa573936247eec9cf";
+        local hexStringUpper = hexStringLower.toupper();
+
+        local a = AES.hexStringToBlob(hexStringLower);
+        local b = AES.hexStringToBlob(hexStringUpper);
+
+        a.seek(0);
+        b.seek(0);
+
+        for (local i = 0; i < a.len(); i++) {
+            local aValue = a.readn('b');
+            local bValue = b.readn('b');
+            assertEqual(aValue, bValue, format("hexStringToBlob failed. Expected: 0x%x, received: 0x%x", aValue, bValue));
+        }
+    }
+
     function testEncryptDecrypt() {
         // Generated some tests with http://aes.online-domain-tools.com
 
