@@ -33,7 +33,7 @@ class CBCTestCase extends ImpTestCase {
         local aesCBC  = AES.CBC(keyBlob, ivBlob);
 
         local valueBlob          = AES.hexStringToBlob(value);
-        local cipherActualBlob   = aes.encrypt(valueBlob);
+        local cipherActualBlob   = aesCBC.encrypt(valueBlob);
         local cipherExpectedBlob = AES.hexStringToBlob(cipherExpected);
 
         cipherActualBlob.seek(0);
@@ -47,7 +47,7 @@ class CBCTestCase extends ImpTestCase {
         // }
 
         local cipherBlob    = AES.hexStringToBlob(value);
-        local decryptedBlob = aes.decrypt(cipherActualBlob);
+        local decryptedBlob = aesCBC.decrypt(cipherActualBlob);
 
         cipherBlob.seek(0);
         decryptedBlob.seek(0);
