@@ -16,6 +16,8 @@ class AESTestCase extends ImpTestCase {
     }
 
     function testEncryptDecrypt() {
+        // Generated some tests with http://aes.online-domain-tools.com
+
         _encryptDecryptCompare("1234567890abcdef1234567890abcdef", "12390942098501230abcdef81239a9eb", "86bd8a144720b6b0650cbde99a0db485");
         _encryptDecryptCompare("1234567890abcdef1234567890abcdef", "df7df63f3e804feaa573936247eec9cf", "966fd5754d0abfe3367d0a48bd2b3a06");
         _encryptDecryptCompare("1234567890abcdef1234567890abcdef", "6aac72463f833e7df7335433feb4dab2", "1b988f965c4aaf0b7f3c371498b017d2");
