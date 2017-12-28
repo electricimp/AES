@@ -27,7 +27,7 @@ is provided by the library `AES.hexStringToBlob(string)`.
 
 ### constructor(*key*)
 
-The constructor creates an instance of the *EAS* class initialized with a key.
+The constructor creates an instance of the *AES* class initialized with a key.
 
 The parameter *key* must be 128 bits (16 bytes), 192 bits (24 bytes) or 256 bits (32 bytes) long.
 
