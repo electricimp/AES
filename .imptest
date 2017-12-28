@@ -1,0 +1,16 @@
+{
+    "apiKey": "b9c6f205484ce46e8f3b4db666000539",
+    "modelId": "yAGfbguy7_mj" /* Test Model B */,
+    "devices": [
+        "23236c6938a609ee" /* B - Imp001+env (23236c6938a609ee) */
+    ],
+    "agentFile": false,
+    "deviceFile": "AES.lib.nut",
+    "stopOnFailure": false,
+    "allowDisconnect": false,
+    "timeout": 30,
+    "tests": [
+        "*.test.nut",
+        "tests/**/*.test.nut"
+    ]
+}

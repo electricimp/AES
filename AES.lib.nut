@@ -69,7 +69,7 @@ class AES {
     // Parameters:
     //     key              Blob that contains the encryption key
     constructor(key) {
-        this.key = key;
+        this.key = typeof key == "string" ? hexStringToBlob(key) : key;
         this._prepare();
     }
 
@@ -80,8 +80,9 @@ class AES {
     //
     // Returns:
     //      Encrypted value as a blob
-    function encrypt(valueblob) {
-        if (valueblob.len() != 16) {
+    function encrypt(value) {
+        local bValue = typeof value == "string" ? hexStringToBlob(value) : value;
+        if (bValue.len() != 16) {
             throw "Invalid value size (must be 16 bytes)"
         }
 
@@ -89,7 +90,7 @@ class AES {
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _blobToInt32(valueblob);
+        local t = _blobToArrayOfInt32(bValue);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Ke[0][i];
         }
@@ -135,7 +136,7 @@ class AES {
         local a = [0, 0, 0, 0];
 
         // convert plaintext to (ints ^ key)
-        local t = _blobToInt32(cipherblob);
+        local t = _blobToArrayOfInt32(cipherblob);
         for (local i = 0; i < 4; i++) {
             t[i] = t[i] ^ this._Kd[0][i];
         }
@@ -192,7 +193,7 @@ class AES {
     //                  to be converted into array of ints.
     //
     // Returns:         Array of 32-bit integers
-    function _blobToInt32(bytes) {
+    function _blobToArrayOfInt32(bytes) {
         local result = [];
         for (local i = 0; i < bytes.len(); i += 4) {
             result.push(
@@ -226,7 +227,7 @@ class AES {
         local KC = this.key.len() / 4;
 
         // convert the key into ints
-        local tk = _blobToInt32(this.key);
+        local tk = _blobToArrayOfInt32(this.key);
 
         // copy values into round key arrays
         local index;
@@ -314,17 +315,18 @@ class AES.CBC {
     }
 
     function encrypt(value) {
-        if ((value.len() % 16) != 0) {
+        local bValue = typeof value == "string" ? AES.hexStringToBlob(value) : value;
+        if ((bValue.len() % 16) != 0) {
             throw "Invalid value size (must be multiple of 16 bytes)"
         }
 
-        local cipherblob = blob(value.len());
+        local cipherblob = blob(bValue.len());
         local block = blob(16);
 
         local lastCipherblock = this._iv
 
-        for (local i = 0; i < value.len(); i += 16) {
-            _blobcopy(value, block, 0, i, i + 16);
+        for (local i = 0; i < bValue.len(); i += 16) {
+            _blobcopy(bValue, block, 0, i, i + 16);
             for (local j = 0; j < 16; j++) {
                 block[j] = block[j] ^ lastCipherblock[j];
             }
