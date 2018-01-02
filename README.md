@@ -1,136 +1,112 @@
-# Advanced Encryption Standard (AES) Implementation in Squirrel
+# Advanced Encryption Standard (AES) Implementation in Squirrel #
 
-The library implements AES-128 encryption in Squirrel. The Squirrel code is based
-on the original JavaScript [implementation](https://github.com/ricmoo/aes-js).
+This library implements AES-128 encryption in Squirrel. The Squirrel code is based on Richard Moore’s [JavaScript implementation](https://github.com/ricmoo/aes-js).
 
-**To add this library to your project, add** `#require "AES.lib.nut:1.0.0"`
-**to the top of your code.**
+It supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It might also support AES-192 and AES-256, but these have not been tested.
 
-The library can be used on both agent and device sides.
+The library also supports Cipher Block Chaining (CBC) mode with custom Initial Vectors (IV), via the *AES.CBC* sub-class. More modes that were not ported are available in the [JavaScript code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
 
-## Scope
+**Note** The library operates exclusively on blobs, ie. key, IV and cipher input and output should be of the blob type. For developers’ convenience, a helper function that converts a hexadecimal string into a blob is provided by the library: [*hexStringToBlob(string)*](#hexstringtoblobhexstring).
 
-The AES library supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
-encryption and decryption (might support AES-192 and AES-256 as well, but was never tested with that).
+The library can be used in both agent and device code.
 
-It also supports Cipher Block Chaining mode (CBC) with custom initial vectors (IV).
+**To add this library to your project, place** `#require "AES.lib.nut:1.0.0"` **at the top of your code.**
 
-More modes that were not ported here are available in the original JS
-[code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
+## AES Class Usage ##
 
-**NOTE:** The library operates exclusively on blobs, e.i. key, iv,
-cipher input and output should be of `blob` type. For developers' convenience a helper function
-that converts a hexadecimal string into a blob value
-is provided by the library `AES.hexStringToBlob(string)`.
+### constructor(*key*) ###
 
-## AES Class Usage
+The constructor creates an instance of the *AES* class initialized with the specified *key*, which must be 128 bits (16 bytes), 192 bits (24 bytes) or 256 bits (32 bytes) long.
 
-### constructor(*key*)
-
-The constructor creates an instance of the *AES* class initialized with a key.
-
-The parameter *key* must be 128 bits (16 bytes), 192 bits (24 bytes) or 256 bits (32 bytes) long.
-
-**Example**
-
-The following code creates an AES object instance:
+#### Example ####
 
 ```squirrel
+#require "AES.lib.nut:1.0.0"
+
 local aes = AES(keyBlob);
-
-// aes object usage ...
 ```
 
-### encrypt(*valueBlob*)
+### encrypt(*valueBlob*) ###
 
-Encrypts the specified value with the key that the AES instance is initialized with.
-`valueBlob` must be 16 byte long `blob`. The function returns a blob with result of
-the encryption process.
+This method encrypts the specified value using the key with which the AES instance was initialized. *valueBlob* must be 16-byte blob. 
 
-For string-to-blob conversions please use [hexStringToBlob](#hexstringtoblobstr).
+The function returns a blob containing the result of the encryption process.
 
-**Example**
+For string-to-blob conversions, please use [*hexStringToBlob()*](#hexstringtoblobhexstring).
 
-The following code encrypts the value and stores it in the local variable:
+#### Example ####
 
 ```squirrel
-local encrypted = aes.encrypt(value);
+local encrypted = aes.encrypt(rawValue);
 ```
 
-### decrypt(*cipherBlob*)
+### decrypt(*cipherBlob*) ###
 
-Decrypts the specified cipher. The `cipherBlob` must be 16 byte long `blob`. The function returns
-a blob with result of the decryption process.
+This method decrypts the specified cipher. The value of *cipherBlob* must be a 16-byte blob. 
 
-**Example**
+The function returns a blob containing the result of the decryption process.
 
-The following code decrypts the value and stores it in the local variable:
+#### Example ####
 
 ```squirrel
-local decrypted = aes.decrypt(cipher);
+local decrypted = aes.decrypt(encrypted);
 ```
 
-### hexStringToBlob(*str*)
+### hexStringToBlob(*hexString*) ###
 
-A helper function to convert a hexadecimal string into a blob value. Returns a blob.
-The function supports only specific format of strings: just hexadecimal digits/characters, for example:
-`fcb5972d1e6419283b9c5a5bf7e193c4` or `ea32d4b183f0988984f1d536f15fd1f2`.
+A helper function which converts a hexadecimal string into a blob, which it returns. The function supports one specific string format: just hexadecimal digits/characters, such as `fcb5972d1e6419283b9c5a5bf7e193c4` or `ea32d4b183f0988984f1d536f15fd1f2`, **without** an `0x` prefix.
+
 No other characters are supported and may result in unpredictable behavior.
 
 Examples of string formats that are not supported: `0x123456`, `\x45\x89\x0f`, `x2Fx34x6F`.
 
-**Example**
+#### Example ####
 
 ```squirrel
 local keyBlob = AES.hexStringToBlob("86bd8a144720b6b0650cbde99a0db485");
-local aes = AES(key);
+local aes = AES(keyBlob);
 
 local valueBlob = AES.hexStringToBlob("6aac72463f833e7df7335433feb4dab2");
 local cipherBlob = aes.encrypt(valueBlob);
-
-// use encrypted value here
-...
 ```
 
-## AES.CBC Class Usage
+## AES.CBC Class Usage ##
 
-### constructor(*key*, *iv*)
+### constructor(*key*, *iv*) ##
 
-Creates an instance of `AES.CBC` class. `key` parameter is the blob that contains the encryption key.
-`iv` is the initialization vector (must be 16 bytes long).
+Creates an instance of the *AES.CBC* class. The *key* parameter is a blob containing the encryption key; *iv* is the initialization vector, which must be 16 bytes long.
 
-### encrypt(*valueBlob*)
+### encrypt(*valueBlob*) ###
 
-Encrypts the specified value. `valueBlob` is the value to be encrypted.
-The parameter size must be multiple of 16 bytes.
+This method encrypts the specified value: a blob with a length that must be a multiple of 16 bytes.
 
-### decrypt(*cipherBlob*)
+### decrypt(*cipherBlob*) ###
 
-Decrypts the specified cipher. `cipherBlob` is the value to be decrypted.
-The value size must be multiple of 16 bytes.
+This method decrypts the specified cipher. The length of *cipherBlob* must be a multiple of 16 bytes.
 
-**Example**
+#### Example ####
 
 ```squirrel
-key <- hexStringToBlob("11111111111111111111111111111111");
-value <- hexStringToBlob("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-iv <- hexStringToBlob("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+local key = AES.hexStringToBlob("11111111111111111111111111111111");
+local iv = AES.hexStringToBlob("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 
-cbc <- AES.CBC(key, iv);
+local cbc = AES.CBC(key, iv);
 
-encrypted <- cbc.encrypt(value);
-decrypted <- cbc.decrypt(encrypted);
-// decrypted == cipher
+local value = AES.hexStringToBlob("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+local encrypted = cbc.encrypt(value);
+local decrypted = cbc.decrypt(encrypted);
 ```
 
-## Performance
+## Performance ##
 
-#### AES
-On an imp-001, a 16 byte blob is normally encrypted or decrypted in 6ms.
+### AES ###
 
-#### AES-CBC
-On an imp-001, a 16 byte blob is normally encrypted or decrypted in 7ms; a 32 byte blob in 13ms (resulting in a 1ms overhead from CBC; which also means you could just always use the CBC version, independent of whether you actually need chaining or not).
+On an imp001, a 16-byte blob is normally encrypted or decrypted in 6ms.
 
-# License
+### AES-CBC ###
+
+On an imp001, a 16-byte blob is normally encrypted or decrypted in 7ms; a 32-byte blob in 13ms (resulting in a 1ms overhead from CBC; which also means you could just always use the CBC version, independent of whether you actually need chaining or not).
+
+# License #
 
 The AES library is licensed under the [MIT License](LICENSE).
