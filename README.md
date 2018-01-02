@@ -2,7 +2,7 @@
 
 This library implements AES-128 encryption in Squirrel. The Squirrel code is based on Richard Moore’s [JavaScript implementation](https://github.com/ricmoo/aes-js).
 
-### Modes ####
+### Modes ###
 
 It supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It might also support AES-192 and AES-256, but these have not been tested.
 
