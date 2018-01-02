@@ -4,7 +4,7 @@ This library implements AES-128 encryption in Squirrel. The Squirrel code is bas
 
 ### Modes ###
 
-The libraryt supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It also handles AES-192 and AES-256, but these have **not** been tested.
+The library supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It also handles AES-192 and AES-256, but these have **not** been tested.
 
 The library also supports Cipher Block Chaining (CBC) mode with custom Initial Vectors (IV), via the [*AES.CBC* sub-class](#aescbc-class-usage). More modes that were not ported are available in the [original JavaScript code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
 
