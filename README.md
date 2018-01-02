@@ -6,7 +6,7 @@ It supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
 
 The library also supports Cipher Block Chaining (CBC) mode with custom Initial Vectors (IV), via the *AES.CBC* sub-class. More modes that were not ported are available in the [JavaScript code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
 
-**Note** The library operates exclusively on blobs, ie. key, IV and cipher input and output should be of the blob type. For developers’ convenience, a helper function that converts a hexadecimal string into a blob is provided by the library: [*hexStringToBlob(string)*](#hexstringtoblobhexstring).
+**Note** The library operates exclusively on blobs, ie. all values passed into class instances and their methods should be blobs, and library methods all return blobs. For developers’ convenience, a helper function that converts a hexadecimal string into a blob is provided by the library: [*hexStringToBlob(string)*](#hexstringtoblobhexstring).
 
 The library can be used in both agent and device code.
 
