@@ -28,7 +28,7 @@ The library can be used in both agent and device code.
 
 ## AES Class Usage ##
 
-### constructor(*key*) ###
+### Constructor: AES(*key*) ###
 
 The constructor creates an instance of the *AES* class initialized with the specified *key*, which must be 128 bits (16 bytes), 192 bits (24 bytes) or 256 bits (32 bytes) long.
 
@@ -39,6 +39,8 @@ The constructor creates an instance of the *AES* class initialized with the spec
 
 local aes = AES(keyBlob);
 ```
+
+## AES Class Methods ##
 
 ### encrypt(*valueBlob*) ###
 
@@ -86,9 +88,11 @@ local cipherBlob = aes.encrypt(valueBlob);
 
 ## AES.CBC Class Usage ##
 
-### constructor(*key*, *iv*) ##
+### Constructor: AES.CBC(*key*, *iv*) ##
 
 Creates an instance of the *AES.CBC* class. The *key* parameter is a blob containing the encryption key; *iv* is the initialization vector, which must be 16 bytes long.
+
+## AES.CBC Class Methods ##
 
 ### encrypt(*valueBlob*) ###
 
