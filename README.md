@@ -4,9 +4,9 @@ This library implements AES-128 encryption in Squirrel. The Squirrel code is bas
 
 ### Modes ###
 
-It supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It might also support AES-192 and AES-256, but these have not been tested.
+The libraryt supports [AES-128](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) encryption and decryption. It also handles AES-192 and AES-256, but these have **not** been tested.
 
-The library also supports Cipher Block Chaining (CBC) mode with custom Initial Vectors (IV), via the [*AES.CBC* sub-class](#aescbc-class-usage). More modes that were not ported are available in the [JavaScript code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
+The library also supports Cipher Block Chaining (CBC) mode with custom Initial Vectors (IV), via the [*AES.CBC* sub-class](#aescbc-class-usage). More modes that were not ported are available in the [original JavaScript code base](https://github.com/ricmoo/aes-js/blob/master/index.js).
 
 ### Performance ###
 
@@ -18,9 +18,9 @@ On an imp001, a 16-byte blob is normally encrypted or decrypted in 6ms.
 
 On an imp001, a 16-byte blob is normally encrypted or decrypted in 7ms; a 32-byte blob in 13ms (resulting in a 1ms overhead from CBC; which also means you could just always use the CBC version, independent of whether you actually need chaining or not).
 
-### Usage ###
+### Usage Notes ###
 
-**Note** The library operates exclusively on blobs, ie. all values passed into class instances and their methods should be blobs, and library methods all return blobs. For developers’ convenience, a helper function that converts a hexadecimal string into a blob is provided by the library: [*hexStringToBlob(string)*](#hexstringtoblobhexstring).
+The library operates exclusively on blobs, ie. all values passed into class instances and their methods should be blobs, and library methods all return blobs. For developers’ convenience, a helper function that converts a hexadecimal string into a blob is provided by the library: [*hexStringToBlob(string)*](#hexstringtoblobhexstring).
 
 The library can be used in both agent and device code.
 
